@@ -4,24 +4,27 @@ using UnityEngine;
 using UnityEngine.UI;
 
 [System.Serializable]
-public struct MeshOption
+public class AssetOption
+{
+    public Sprite image;
+}
+
+[System.Serializable]
+public class MeshOption : AssetOption
 {
     public Mesh mesh;
-    public Sprite image;
 }
 
 [System.Serializable]
-public struct MaterialOption
+public class MaterialOption : AssetOption
 {
     public Material material;
-    public Sprite image;
 }
 
 [System.Serializable]
-public struct TextureOption
+public class TextureOption : AssetOption
 {
     public Texture texture;
-    public Sprite image;
 }
 
 public class AssetManager : MonoBehaviour
@@ -52,20 +55,7 @@ public class AssetManager : MonoBehaviour
 
     public void UpdateMesh()
     {
-        UpdateButton(meshCurrentPage, meshes.Length);
-
-        for (int i = 0; i < assetButton.Length; i++)
-        {
-            if (meshCurrentPage * 4 + i < meshes.Length)
-            {
-                assetButton[i].SetActive(true);
-                assetButton[i].GetComponent<Image>().sprite = meshes[meshCurrentPage * 4 + i].image;
-            }
-            else
-            {
-                assetButton[i].SetActive(false);
-            }
-        }
+        UpdateButton(meshCurrentPage, meshes);
     }
 
     public void MeshPrevious()
@@ -87,20 +77,7 @@ public class AssetManager : MonoBehaviour
 
     public void UpdateMaterial()
     {
-        UpdateButton(materialCurrentPage, materials.Length);
-
-        for (int i = 0; i < assetButton.Length; i++)
-        {
-            if (materialCurrentPage * 4 + i < materials.Length)
-            {
-                assetButton[i].SetActive(true);
-                assetButton[i].GetComponent<Image>().sprite = materials[materialCurrentPage * 4 + i].image;
-            }
-            else
-            {
-                assetButton[i].SetActive(false);
-            }
-        }
+        UpdateButton(materialCurrentPage, materials);
     }
 
     public void MaterialPrevious()
@@ -117,27 +94,14 @@ public class AssetManager : MonoBehaviour
 
     public void PickMaterial(int _index, Transform _model)
     {
-        Texture currentTexture = _model.GetComponent<MeshRenderer>().material.GetTexture("_MainTex");
+        Texture currentTexture = _model.GetComponent<MeshRenderer>().material.GetTexture("_BaseMap");
         _model.GetComponent<MeshRenderer>().material = materials[materialCurrentPage * 4 + _index].material;
-        _model.GetComponent<MeshRenderer>().material.SetTexture("_MainTex", currentTexture);
+        _model.GetComponent<MeshRenderer>().material.SetTexture("_BaseMap", currentTexture);
     }
 
     public void UpdateTexture()
     {
-        UpdateButton(textureCurrentPage, textures.Length);
-
-        for (int i = 0; i < assetButton.Length; i++)
-        {
-            if (textureCurrentPage * 4 + i < textures.Length)
-            {
-                assetButton[i].SetActive(true);
-                assetButton[i].GetComponent<Image>().sprite = textures[textureCurrentPage * 4 + i].image;
-            }
-            else
-            {
-                assetButton[i].SetActive(false);
-            }
-        }
+        UpdateButton(textureCurrentPage, textures);
     }
 
     public void TexturePrevious()
@@ -154,19 +118,32 @@ public class AssetManager : MonoBehaviour
 
     public void PickTexture(int _index, Transform _model)
     {
-        _model.GetComponent<MeshRenderer>().material.SetTexture("_MainTex", textures[textureCurrentPage * 4 + _index].texture);
+        _model.GetComponent<MeshRenderer>().material.SetTexture("_BaseMap", textures[textureCurrentPage * 4 + _index].texture);
     }
 
-    private void UpdateButton(int _currentPage, int _assetLenth)
+    private void UpdateButton(int _currentPage, AssetOption[] _assets)
     {
         if (_currentPage > 0)
             previousButton.SetActive(true);
         else
             previousButton.SetActive(false);
 
-        if (_assetLenth > (_currentPage + 1) * assetButton.Length)
+        if (_assets.Length > (_currentPage + 1) * assetButton.Length)
             nextButton.SetActive(true);
         else
             nextButton.SetActive(false);
+
+        for (int i = 0; i < assetButton.Length; i++)
+        {
+            if (_currentPage * 4 + i < _assets.Length)
+            {
+                assetButton[i].SetActive(true);
+                assetButton[i].GetComponent<Image>().sprite = _assets[_currentPage * 4 + i].image;
+            }
+            else
+            {
+                assetButton[i].SetActive(false);
+            }
+        }
     }
 }
