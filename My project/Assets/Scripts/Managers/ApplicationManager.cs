@@ -2,13 +2,17 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-using UnityEngine.Android;
-using UnityEngine.iOS;
 using UnityEngine.EventSystems;
 using UnityEngine.Rendering;
 using UnityEngine.Rendering.Universal;
 using TMPro;
 
+#if UNITY_ANDROID
+using UnityEngine.Android;
+#endif
+#if UNITY_IOS
+using UnityEngine.iOS;
+#endif
 
 public enum ControlMode
 {
@@ -25,6 +29,7 @@ public enum AntialiasingOption
 
 public class ApplicationManager : MonoBehaviour
 {
+    [Header("General")]
     public EventSystem eventSystem;
     private ControlMode m_controlMode = ControlMode.View;
     public Transform targetModel;
@@ -33,6 +38,8 @@ public class ApplicationManager : MonoBehaviour
     private bool m_modelTouched;
     private float m_sqTwoPointsDistance;
 
+    [Space]
+    [Header("Transform Limit")]
     public float scaleMin;
     public float scaleMax;
     public float positionYMin;
@@ -42,7 +49,8 @@ public class ApplicationManager : MonoBehaviour
     private float m_scaleSensitivity;
     private float m_moveSensitivity;
 
-    public GameObject buttonParent;
+    public GameObject UIBottomLeft;
+    public GameObject UIBottomRight;
     private int m_currentMenuIndex;
     public GameObject[] allMenus;
 
@@ -85,8 +93,15 @@ public class ApplicationManager : MonoBehaviour
         ChangeMoveSensitivity();
 
 #if UNITY_ANDROID || UNITY_IOS
-        buttonParent.transform.localScale *= 2;
-        settingParent.transform.localScale *= 2;
+        UIBottomLeft.transform.localScale *= 2.5f;
+        UIBottomRight.transform.localScale *= 2.5f;
+        settingParent.transform.localScale *= 2.5f;
+
+        lightAngleSlider.GetComponentInChildren<TextMeshProUGUI>().raycastTarget = true;
+        lightIntensitySlider.GetComponentInChildren<TextMeshProUGUI>().raycastTarget = true;
+        rotateSensitivitySlider.GetComponentInChildren<TextMeshProUGUI>().raycastTarget = true;
+        scaleSensitivitySlider.GetComponentInChildren<TextMeshProUGUI>().raycastTarget = true;
+        moveSensitivitySlider.GetComponentInChildren<TextMeshProUGUI>().raycastTarget = true;
 #endif
     }
 
@@ -100,14 +115,13 @@ public class ApplicationManager : MonoBehaviour
                 Touch touch = Input.GetTouch(0);
                 if (touch.phase == TouchPhase.Began)
                 {
+                    m_modelTouched = false;
                     m_touchedPosition = touch.position;
-                    if (Physics.Raycast(Camera.main.ScreenPointToRay(m_touchedPosition)))
+                    RaycastHit hit;
+                    if (Physics.Raycast(Camera.main.ScreenPointToRay(m_touchedPosition), out hit))
                     {
-                        m_modelTouched = true;
-                    }
-                    else
-                    {
-                        m_modelTouched = false;
+                        if (hit.collider.transform == targetModel)
+                            m_modelTouched = true;
                     }
                 }
                 else if (touch.phase == TouchPhase.Moved)
@@ -120,7 +134,7 @@ public class ApplicationManager : MonoBehaviour
                     else if (!eventSystem.currentSelectedGameObject)
                     {
                         Vector2 movement = touch.position - m_touchedPosition;
-                        RotateModel(movement.y * 0.1f, -movement.x * 0.1f);
+                        RotateModel(movement.y * 0.05f, -movement.x * 0.05f);
                     }
 
                     m_touchedPosition = touch.position;
@@ -358,7 +372,8 @@ public class ApplicationManager : MonoBehaviour
     {
         m_controlMode = ControlMode.Setting;
 
-        buttonParent.SetActive(false);
+        UIBottomLeft.SetActive(false);
+        UIBottomRight.SetActive(false);
         settingParent.SetActive(true);
     }
 
@@ -366,7 +381,8 @@ public class ApplicationManager : MonoBehaviour
     {
         m_controlMode = ControlMode.View;
 
-        buttonParent.SetActive(true);
+        UIBottomLeft.SetActive(true);
+        UIBottomRight.SetActive(true);
         settingParent.SetActive(false);
     }
 

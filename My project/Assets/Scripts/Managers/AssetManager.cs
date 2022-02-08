@@ -42,6 +42,8 @@ public class AssetManager : MonoBehaviour
     public TextureOption[] textures;
     private int textureCurrentPage = 0;
 
+    private int m_baseMapID;
+
     public GameObject[] assetButton;
     public GameObject previousButton;
     public GameObject nextButton;
@@ -51,6 +53,8 @@ public class AssetManager : MonoBehaviour
         meshes[0].mesh = cube.GetComponent<MeshFilter>().sharedMesh;
         meshes[1].mesh = sphere.GetComponent<MeshFilter>().sharedMesh;
         meshes[2].mesh = capsule.GetComponent<MeshFilter>().sharedMesh;
+
+        m_baseMapID = Shader.PropertyToID("_BaseMap");
     }
 
     public void UpdateMesh()
@@ -94,9 +98,9 @@ public class AssetManager : MonoBehaviour
 
     public void PickMaterial(int _index, Transform _model)
     {
-        Texture currentTexture = _model.GetComponent<MeshRenderer>().material.GetTexture("_BaseMap");
+        Texture currentTexture = _model.GetComponent<MeshRenderer>().material.GetTexture(m_baseMapID);
         _model.GetComponent<MeshRenderer>().material = materials[materialCurrentPage * 4 + _index].material;
-        _model.GetComponent<MeshRenderer>().material.SetTexture("_BaseMap", currentTexture);
+        _model.GetComponent<MeshRenderer>().material.SetTexture(m_baseMapID, currentTexture);
     }
 
     public void UpdateTexture()
@@ -118,7 +122,7 @@ public class AssetManager : MonoBehaviour
 
     public void PickTexture(int _index, Transform _model)
     {
-        _model.GetComponent<MeshRenderer>().material.SetTexture("_BaseMap", textures[textureCurrentPage * 4 + _index].texture);
+        _model.GetComponent<MeshRenderer>().material.SetTexture(m_baseMapID, textures[textureCurrentPage * 4 + _index].texture);
     }
 
     private void UpdateButton(int _currentPage, AssetOption[] _assets)
