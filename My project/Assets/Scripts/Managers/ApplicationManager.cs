@@ -31,29 +31,38 @@ public class ApplicationManager : MonoBehaviour
 {
     [Header("General")]
     public EventSystem eventSystem;
-    private ControlMode m_controlMode = ControlMode.View;
+    public AssetManager assetManager;
     public Transform targetModel;
+    private ControlMode m_controlMode = ControlMode.View;
 
-    private Vector2 m_touchedPosition;
-    private bool m_modelTouched;
-    private float m_sqTwoPointsDistance;
+    private bool m_onePointTouchBegin;   // make sure certain behaviour only happens during one point touch
+    private bool m_twoPointsTouchBegin;  // make sure certain behaviour only happens during two points touch
+    private Vector2 m_touchedPosition;   // record touched postion from previous frame
+    private bool m_modelTouched;         // if we hit model when the touch starts
+    private float m_twoPointsDistance;   // record distance between two touched points from previous frame
 
     [Space]
     [Header("Transform Limit")]
-    public float scaleMin;
-    public float scaleMax;
-    public float positionYMin;
-    public float positionYMax;
+    public float scaleMin;      // minimum scale
+    public float scaleMax;      // maximum scale
+    public float positionYMin;  // border to keep the model inside the screen
+    public float positionYMax;  // border to keep the model inside the screen
 
-    private float m_rotateSensitivity;
-    private float m_scaleSensitivity;
-    private float m_moveSensitivity;
+    [Space]
+    [Header("Control Sensitivity")]
+    private float m_rotateSensitivity;  // sensitivity of rotating model
+    private float m_scaleSensitivity;   // sensitivity of scaling model
+    private float m_moveSensitivity;    // sensitivity of moving model
 
+    [Space]
+    [Header("Main UI Reference")]
     public GameObject UIBottomLeft;
-    public GameObject UIBottomRight;
-    private int m_currentMenuIndex;
+    public GameObject UITopRight;
+    private int m_currentMenuIndex = 0;
     public GameObject[] allMenus;
 
+    [Space]
+    [Header("Post Processing")]
     private UniversalAdditionalCameraData cameraData;
     public Volume globalVolume;
     private Tonemapping tonemapping;
@@ -68,12 +77,17 @@ public class ApplicationManager : MonoBehaviour
     private bool m_colorAdjustments = true;
     public TextMeshProUGUI colorAdjustmentsText;
 
+    [Space]
+    [Header("Light")]
     public Light sceneLight;
     public Slider lightAngleSlider;
     public Slider lightIntensitySlider;
-    public AssetManager assetManager;
 
+    [Space]
+    [Header("Setting")]
     public GameObject settingParent;
+    public GameObject instructionForMouse;
+    public GameObject instructionForTouchScreen;
     public Slider rotateSensitivitySlider;
     public Slider scaleSensitivitySlider;
     public Slider moveSensitivitySlider;
@@ -81,42 +95,54 @@ public class ApplicationManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        m_currentMenuIndex = 0;
-
+        // Initialize post processing reference
         cameraData = Camera.main.GetComponent<UniversalAdditionalCameraData>();
         globalVolume.profile.TryGet(out tonemapping);
         globalVolume.profile.TryGet(out vignette);
         globalVolume.profile.TryGet(out colorAdjustments);
 
+        // Initialize control sensitivities based on slider value
         ChangeRotateSensitivity();
         ChangeScaleSensitivity();
         ChangeMoveSensitivity();
 
 #if UNITY_ANDROID || UNITY_IOS
+
+        // Scale up UI for mobile device
         UIBottomLeft.transform.localScale *= 2.5f;
-        UIBottomRight.transform.localScale *= 2.5f;
+        UITopRight.transform.localScale *= 2.5f;
         settingParent.transform.localScale *= 2.5f;
 
+        // Turn some raycast on for easier mobile device interaction
         lightAngleSlider.GetComponentInChildren<TextMeshProUGUI>().raycastTarget = true;
         lightIntensitySlider.GetComponentInChildren<TextMeshProUGUI>().raycastTarget = true;
         rotateSensitivitySlider.GetComponentInChildren<TextMeshProUGUI>().raycastTarget = true;
         scaleSensitivitySlider.GetComponentInChildren<TextMeshProUGUI>().raycastTarget = true;
         moveSensitivitySlider.GetComponentInChildren<TextMeshProUGUI>().raycastTarget = true;
+
+        instructionForTouchScreen.SetActive(true);
+#else
+        instructionForMouse.SetActive(true);
 #endif
     }
 
     // Update is called once per frame
     void Update()
     {
+        // take input when it is in view mode
         if (m_controlMode == ControlMode.View)
         {
+            // one point touch
             if (Input.touchCount == 1)
             {
                 Touch touch = Input.GetTouch(0);
                 if (touch.phase == TouchPhase.Began)
                 {
-                    m_modelTouched = false;
+                    m_onePointTouchBegin = true;
                     m_touchedPosition = touch.position;
+
+                    // check if user touch the model
+                    m_modelTouched = false;
                     RaycastHit hit;
                     if (Physics.Raycast(Camera.main.ScreenPointToRay(m_touchedPosition), out hit))
                     {
@@ -126,42 +152,68 @@ public class ApplicationManager : MonoBehaviour
                 }
                 else if (touch.phase == TouchPhase.Moved)
                 {
-                    if (m_modelTouched)
+                    if (m_onePointTouchBegin)
                     {
-                        Vector2 movement = touch.position - m_touchedPosition;
-                        MoveModel(movement.x * 20f / Screen.height, movement.y * 20f / Screen.height);
-                    }
-                    else if (!eventSystem.currentSelectedGameObject)
-                    {
-                        Vector2 movement = touch.position - m_touchedPosition;
-                        RotateModel(movement.y * 0.05f, -movement.x * 0.05f);
-                    }
+                        // move the model when user start by touching on the model
+                        if (m_modelTouched)
+                        {
+                            Vector2 movement = touch.position - m_touchedPosition;
+                            MoveModel(movement.x * 20f / Screen.height, movement.y * 20f / Screen.height);
+                        }
+                        // rotate the model when user start by touching somewhere else
+                        else if (!eventSystem.currentSelectedGameObject)
+                        {
+                            Vector2 movement = touch.position - m_touchedPosition;
+                            RotateModel(movement.y * 0.05f, -movement.x * 0.05f);
+                        }
 
-                    m_touchedPosition = touch.position;
+                        // set position for next frame
+                        m_touchedPosition = touch.position;
+                    }
+                }
+                else if (touch.phase == TouchPhase.Ended)
+                {
+                    m_onePointTouchBegin = false;
                 }
             }
             else if (Input.touchCount == 2)
             {
+                // end one point input
+                m_onePointTouchBegin = false;
+
                 Touch touch1 = Input.GetTouch(0);
                 Touch touch2 = Input.GetTouch(1);
                 if (touch2.phase == TouchPhase.Began)
                 {
-                    Vector2 displacement = touch2.position - touch1.position;
-                    m_sqTwoPointsDistance = displacement.x * displacement.x + displacement.y * displacement.y;
+                    m_twoPointsTouchBegin = true;
+
+                    m_twoPointsDistance = (touch2.position - touch1.position).magnitude;
                 }
                 else if (touch2.phase == TouchPhase.Moved)
                 {
-                    Vector2 displacement = touch2.position - touch1.position;
-                    float newSqTwoPointsDistance = displacement.x * displacement.x + displacement.y * displacement.y;
-                    float deltaTwoPointsDistance = newSqTwoPointsDistance - m_sqTwoPointsDistance;
-
-                    if (deltaTwoPointsDistance > 10000f || deltaTwoPointsDistance < -10000f)
+                    if (m_twoPointsTouchBegin)
                     {
-                        ScaleModel(deltaTwoPointsDistance * 0.00005f);
-                    }
+                        // calculate distance difference between two frames
+                        float newtwoPointsDistance = (touch2.position - touch1.position).magnitude;
+                        float deltatwoPointsDistance = newtwoPointsDistance - m_twoPointsDistance;
 
-                    m_sqTwoPointsDistance = newSqTwoPointsDistance;
+                        if (deltatwoPointsDistance > 0.5f || deltatwoPointsDistance < -0.5f)
+                        {
+                            ScaleModel(deltatwoPointsDistance * 0.05f);
+                        }
+
+                        // set distance for next frame
+                        m_twoPointsDistance = newtwoPointsDistance;
+                    }
                 }
+                else if (touch2.phase == TouchPhase.Ended)
+                {
+                    m_twoPointsTouchBegin = false;
+                }
+            }
+            else if (Input.touchCount > 2)
+            {
+                m_twoPointsTouchBegin = false;
             }
 
             if (Input.GetMouseButton(0) && !eventSystem.currentSelectedGameObject)
@@ -181,13 +233,6 @@ public class ApplicationManager : MonoBehaviour
         }
     }
 
-    public void BackToDefault()
-    {
-        targetModel.rotation = Quaternion.identity;
-        targetModel.localScale = Vector3.one;
-        targetModel.position = Vector3.zero;
-    }
-
     public void RotateModel(float _axisX, float _axisY)
     {
         targetModel.Rotate(_axisX * m_rotateSensitivity, _axisY * m_rotateSensitivity, 0f, Space.World);
@@ -204,6 +249,15 @@ public class ApplicationManager : MonoBehaviour
         float newX = Mathf.Clamp(targetModel.position.x + _axisX * m_moveSensitivity, positionYMin * Screen.width / Screen.height, positionYMax * Screen.width / Screen.height);
         float newY = Mathf.Clamp(targetModel.position.y + _axisY * m_moveSensitivity, positionYMin, positionYMax);
         targetModel.position = new Vector3(newX, newY, 0f);
+    }
+
+    public void ResetModel()
+    {
+        targetModel.rotation = Quaternion.identity;
+        targetModel.localScale = Vector3.one;
+        targetModel.position = Vector3.zero;
+
+        assetManager.ResetModelAssets(targetModel);
     }
 
     public void ChangeAntialiasing(bool _next)
@@ -225,6 +279,7 @@ public class ApplicationManager : MonoBehaviour
 
         m_antialiasing = (AntialiasingOption)index;
 
+        // change anti-aliasing
         switch(m_antialiasing)
         {
             case AntialiasingOption.OFF:
@@ -302,6 +357,7 @@ public class ApplicationManager : MonoBehaviour
 
     public void SwitchMenu(int _index)
     {
+        // hide previous menu and show new menu
         allMenus[m_currentMenuIndex].SetActive(false);
         m_currentMenuIndex = _index;
         allMenus[m_currentMenuIndex].SetActive(true);
@@ -373,7 +429,7 @@ public class ApplicationManager : MonoBehaviour
         m_controlMode = ControlMode.Setting;
 
         UIBottomLeft.SetActive(false);
-        UIBottomRight.SetActive(false);
+        UITopRight.SetActive(false);
         settingParent.SetActive(true);
     }
 
@@ -382,7 +438,7 @@ public class ApplicationManager : MonoBehaviour
         m_controlMode = ControlMode.View;
 
         UIBottomLeft.SetActive(true);
-        UIBottomRight.SetActive(true);
+        UITopRight.SetActive(true);
         settingParent.SetActive(false);
     }
 

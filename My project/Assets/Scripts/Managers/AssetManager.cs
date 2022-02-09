@@ -29,10 +29,13 @@ public class TextureOption : AssetOption
 
 public class AssetManager : MonoBehaviour
 {
+    [Header("Primitive Prefab")]
     public GameObject cube;
     public GameObject sphere;
     public GameObject capsule;
 
+    [Space]
+    [Header("Asset Data")]
     public MeshOption[] meshes;
     private int meshCurrentPage = 0;
 
@@ -44,12 +47,15 @@ public class AssetManager : MonoBehaviour
 
     private int m_baseMapID;
 
+    [Space]
+    [Header("Button Reference")]
     public GameObject[] assetButton;
     public GameObject previousButton;
     public GameObject nextButton;
 
     private void Start()
     {
+        // Initialize primitive meshes
         meshes[0].mesh = cube.GetComponent<MeshFilter>().sharedMesh;
         meshes[1].mesh = sphere.GetComponent<MeshFilter>().sharedMesh;
         meshes[2].mesh = capsule.GetComponent<MeshFilter>().sharedMesh;
@@ -125,18 +131,28 @@ public class AssetManager : MonoBehaviour
         _model.GetComponent<MeshRenderer>().material.SetTexture(m_baseMapID, textures[textureCurrentPage * 4 + _index].texture);
     }
 
+    public void ResetModelAssets(Transform _model)
+    {
+        _model.GetComponent<MeshFilter>().mesh = meshes[0].mesh;
+        _model.GetComponent<MeshRenderer>().material = materials[0].material;
+        _model.GetComponent<MeshRenderer>().material.SetTexture(m_baseMapID, textures[0].texture);
+    }
+
     private void UpdateButton(int _currentPage, AssetOption[] _assets)
     {
+        // check if "previous page" button should be available
         if (_currentPage > 0)
             previousButton.SetActive(true);
         else
             previousButton.SetActive(false);
 
+        // check if "next page" button should be available
         if (_assets.Length > (_currentPage + 1) * assetButton.Length)
             nextButton.SetActive(true);
         else
             nextButton.SetActive(false);
 
+        // show available asset options in current page
         for (int i = 0; i < assetButton.Length; i++)
         {
             if (_currentPage * 4 + i < _assets.Length)
