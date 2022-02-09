@@ -63,8 +63,8 @@ public class ApplicationManager : MonoBehaviour
 
     [Space]
     [Header("Post Processing")]
-    private UniversalAdditionalCameraData cameraData;
     public Volume globalVolume;
+    private UniversalAdditionalCameraData cameraData;
     private Tonemapping tonemapping;
     private Vignette vignette;
     private ColorAdjustments colorAdjustments;
@@ -96,10 +96,10 @@ public class ApplicationManager : MonoBehaviour
     void Start()
     {
         // Initialize post processing reference
-        cameraData = Camera.main.GetComponent<UniversalAdditionalCameraData>();
         globalVolume.profile.TryGet(out tonemapping);
         globalVolume.profile.TryGet(out vignette);
         globalVolume.profile.TryGet(out colorAdjustments);
+        cameraData = Camera.main.GetComponent<UniversalAdditionalCameraData>();
 
         // Initialize control sensitivities based on slider value
         ChangeRotateSensitivity();
@@ -257,7 +257,8 @@ public class ApplicationManager : MonoBehaviour
         targetModel.localScale = Vector3.one;
         targetModel.position = Vector3.zero;
 
-        assetManager.ResetModelAssets(targetModel);
+        // abandoned
+        //assetManager.ResetModelAssets(targetModel);
     }
 
     public void ChangeAntialiasing(bool _next)
@@ -449,11 +450,11 @@ public class ApplicationManager : MonoBehaviour
 
     public void ChangeScaleSensitivity()
     {
-        m_scaleSensitivity = scaleSensitivitySlider.value * 0.01f;
+        m_scaleSensitivity = scaleSensitivitySlider.value;
     }
 
     public void ChangeMoveSensitivity()
     {
-        m_moveSensitivity = moveSensitivitySlider.value * 0.05f;
+        m_moveSensitivity = moveSensitivitySlider.value;
     }
 }

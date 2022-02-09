@@ -6,7 +6,7 @@ using UnityEngine.UI;
 [System.Serializable]
 public class AssetOption
 {
-    public Sprite image;
+    public Sprite sprite;
 }
 
 [System.Serializable]
@@ -131,12 +131,13 @@ public class AssetManager : MonoBehaviour
         _model.GetComponent<MeshRenderer>().material.SetTexture(m_baseMapID, textures[textureCurrentPage * 4 + _index].texture);
     }
 
-    public void ResetModelAssets(Transform _model)
-    {
-        _model.GetComponent<MeshFilter>().mesh = meshes[0].mesh;
-        _model.GetComponent<MeshRenderer>().material = materials[0].material;
-        _model.GetComponent<MeshRenderer>().material.SetTexture(m_baseMapID, textures[0].texture);
-    }
+    // Maybe we don't need this
+    //public void ResetModelAssets(Transform _model)
+    //{
+    //    _model.GetComponent<MeshFilter>().mesh = meshes[0].mesh;
+    //    _model.GetComponent<MeshRenderer>().material = materials[0].material;
+    //    _model.GetComponent<MeshRenderer>().material.SetTexture(m_baseMapID, textures[0].texture);
+    //}
 
     private void UpdateButton(int _currentPage, AssetOption[] _assets)
     {
@@ -158,7 +159,7 @@ public class AssetManager : MonoBehaviour
             if (_currentPage * 4 + i < _assets.Length)
             {
                 assetButton[i].SetActive(true);
-                assetButton[i].GetComponent<Image>().sprite = _assets[_currentPage * 4 + i].image;
+                assetButton[i].GetComponent<Image>().sprite = _assets[_currentPage * 4 + i].sprite;
             }
             else
             {

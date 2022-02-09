@@ -2565,7 +2565,7 @@ MonoBehaviour:
   m_Direction: 0
   m_MinValue: 2
   m_MaxValue: 30
-  m_WholeNumbers: 1
+  m_WholeNumbers: 0
   m_Value: 10
   m_OnValueChanged:
     m_PersistentCalls:
@@ -6444,10 +6444,10 @@ MonoBehaviour:
   m_FillRect: {fileID: 2087374595}
   m_HandleRect: {fileID: 2033761955}
   m_Direction: 0
-  m_MinValue: 2
-  m_MaxValue: 30
-  m_WholeNumbers: 1
-  m_Value: 10
+  m_MinValue: 0.02
+  m_MaxValue: 0.3
+  m_WholeNumbers: 0
+  m_Value: 0.1
   m_OnValueChanged:
     m_PersistentCalls:
       m_Calls:
@@ -9669,41 +9669,41 @@ MonoBehaviour:
   sphere: {fileID: 78969859587850769, guid: f4ff975ea8533e0409341915fcf71aea, type: 3}
   capsule: {fileID: 8435363507017806348, guid: ec23fc883b24c304da403263267ad7c7, type: 3}
   meshes:
-  - image: {fileID: -896691205, guid: dd7dee3d55c49a240a82bf0f309ec7e9, type: 3}
+  - sprite: {fileID: -896691205, guid: dd7dee3d55c49a240a82bf0f309ec7e9, type: 3}
     mesh: {fileID: 0}
-  - image: {fileID: 181643330, guid: dd7dee3d55c49a240a82bf0f309ec7e9, type: 3}
+  - sprite: {fileID: 181643330, guid: dd7dee3d55c49a240a82bf0f309ec7e9, type: 3}
     mesh: {fileID: 0}
-  - image: {fileID: -1304087107, guid: dd7dee3d55c49a240a82bf0f309ec7e9, type: 3}
+  - sprite: {fileID: -1304087107, guid: dd7dee3d55c49a240a82bf0f309ec7e9, type: 3}
     mesh: {fileID: 0}
   materials:
-  - image: {fileID: 1134862267, guid: c5a77832a2f18824695247ef696557f7, type: 3}
+  - sprite: {fileID: 1134862267, guid: c5a77832a2f18824695247ef696557f7, type: 3}
     material: {fileID: 2100000, guid: de1f20c925ac377449f881a6ff81e3ea, type: 2}
-  - image: {fileID: 1407540107, guid: c5a77832a2f18824695247ef696557f7, type: 3}
+  - sprite: {fileID: 1407540107, guid: c5a77832a2f18824695247ef696557f7, type: 3}
     material: {fileID: 2100000, guid: 10cd198af2408d648a29010ae321ed4e, type: 2}
-  - image: {fileID: -298405130, guid: c5a77832a2f18824695247ef696557f7, type: 3}
+  - sprite: {fileID: -298405130, guid: c5a77832a2f18824695247ef696557f7, type: 3}
     material: {fileID: 2100000, guid: 273c9ccc5cad39f4981698c1f26b879a, type: 2}
-  - image: {fileID: 1407540107, guid: c5a77832a2f18824695247ef696557f7, type: 3}
+  - sprite: {fileID: 1407540107, guid: c5a77832a2f18824695247ef696557f7, type: 3}
     material: {fileID: 2100000, guid: 10cd198af2408d648a29010ae321ed4e, type: 2}
-  - image: {fileID: -298405130, guid: c5a77832a2f18824695247ef696557f7, type: 3}
+  - sprite: {fileID: -298405130, guid: c5a77832a2f18824695247ef696557f7, type: 3}
     material: {fileID: 2100000, guid: 273c9ccc5cad39f4981698c1f26b879a, type: 2}
   textures:
-  - image: {fileID: 21300000, guid: 19ed624329ab5114aabae8b6388a40e1, type: 3}
+  - sprite: {fileID: 21300000, guid: 19ed624329ab5114aabae8b6388a40e1, type: 3}
     texture: {fileID: 2800000, guid: 19ed624329ab5114aabae8b6388a40e1, type: 3}
-  - image: {fileID: 21300000, guid: 431da5250f8de0741ac1bb56734f0c60, type: 3}
+  - sprite: {fileID: 21300000, guid: 431da5250f8de0741ac1bb56734f0c60, type: 3}
     texture: {fileID: 2800000, guid: 431da5250f8de0741ac1bb56734f0c60, type: 3}
-  - image: {fileID: 21300000, guid: 9fcbc64116ae9e8479181078544bbd18, type: 3}
+  - sprite: {fileID: 21300000, guid: 9fcbc64116ae9e8479181078544bbd18, type: 3}
     texture: {fileID: 2800000, guid: 9fcbc64116ae9e8479181078544bbd18, type: 3}
-  - image: {fileID: 21300000, guid: 9c9494484d14bbb4aa8a94055dc66142, type: 3}
+  - sprite: {fileID: 21300000, guid: 9c9494484d14bbb4aa8a94055dc66142, type: 3}
     texture: {fileID: 2800000, guid: 9c9494484d14bbb4aa8a94055dc66142, type: 3}
-  - image: {fileID: 21300000, guid: f8dc1ed1e2cb2c64e9caf3bab6aa898e, type: 3}
+  - sprite: {fileID: 21300000, guid: f8dc1ed1e2cb2c64e9caf3bab6aa898e, type: 3}
     texture: {fileID: 2800000, guid: f8dc1ed1e2cb2c64e9caf3bab6aa898e, type: 3}
-  - image: {fileID: 21300000, guid: e4f336e227010a24893e98f6eff84738, type: 3}
+  - sprite: {fileID: 21300000, guid: e4f336e227010a24893e98f6eff84738, type: 3}
     texture: {fileID: 2800000, guid: e4f336e227010a24893e98f6eff84738, type: 3}
-  - image: {fileID: 21300000, guid: 4ded3b2db7dbb4140b775419c68d00f5, type: 3}
+  - sprite: {fileID: 21300000, guid: 4ded3b2db7dbb4140b775419c68d00f5, type: 3}
     texture: {fileID: 2800000, guid: 4ded3b2db7dbb4140b775419c68d00f5, type: 3}
-  - image: {fileID: 21300000, guid: a5413f18479244b4aa3f71d66b226a53, type: 3}
+  - sprite: {fileID: 21300000, guid: a5413f18479244b4aa3f71d66b226a53, type: 3}
     texture: {fileID: 2800000, guid: a5413f18479244b4aa3f71d66b226a53, type: 3}
-  - image: {fileID: 21300000, guid: d821a5d649835d64390b0b0ea7a9b41c, type: 3}
+  - sprite: {fileID: 21300000, guid: d821a5d649835d64390b0b0ea7a9b41c, type: 3}
     texture: {fileID: 2800000, guid: d821a5d649835d64390b0b0ea7a9b41c, type: 3}
   assetButton:
   - {fileID: 1112999020}
@@ -10443,10 +10443,10 @@ MonoBehaviour:
   m_FillRect: {fileID: 1044847006}
   m_HandleRect: {fileID: 141052786}
   m_Direction: 0
-  m_MinValue: 2
-  m_MaxValue: 30
-  m_WholeNumbers: 1
-  m_Value: 10
+  m_MinValue: 0.1
+  m_MaxValue: 1.5
+  m_WholeNumbers: 0
+  m_Value: 0.5
   m_OnValueChanged:
     m_PersistentCalls:
       m_Calls:
